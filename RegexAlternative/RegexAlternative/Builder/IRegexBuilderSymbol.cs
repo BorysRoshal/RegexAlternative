@@ -6,7 +6,11 @@
 
         IRegexBuilderSymbolProperties NotSymbols(string val);
 
-        IRegexBuilderSymbolProperties Symbol { get; }
+        IRegexBuilderSymbolProperties String(string val);
+
+        IRegexBuilderSymbolProperties Symbol(char val);
+
+        IRegexBuilderSymbolProperties AnySymbol { get; }
 
         IRegexBuilderSymbolProperties TextSymbol { get; }
 

@@ -41,10 +41,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Builder\IRegexBuilderSymbolProperties.cs" />
     <Compile Include="Builder\IRegexBuilderThen.cs" />
     <Compile Include="Builder\IRegexBuilderSymbol.cs" />
     <Compile Include="Builder\IRegexBuilderSymbolRepeated.cs" />
-    <Compile Include="Builder\IRegexBuilderSymbolProperties.cs" />
+    <Compile Include="Builder\IRegexBuilderSymbolWhich.cs" />
     <Compile Include="RegexBuilder.cs" />
     <Compile Include="Repeated\RepeatedNTimes.cs" />
     <Compile Include="Repeated\RepeatedFromNTimes.cs" />

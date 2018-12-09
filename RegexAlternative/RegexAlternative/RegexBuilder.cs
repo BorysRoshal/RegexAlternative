@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using RegexAlternative.Builder;
 using RegexAlternative.Repeated;
@@ -6,7 +7,7 @@ using RegexAlternative.Glyphs;
 
 namespace RegexAlternative
 {
-    public class RegexBuilder: IRegexBuilderSymbolProperties, IRegexBuilderSymbolRepeated, IRegexBuilderSymbol
+    public class RegexBuilder: IRegexBuilderSymbolWhich, IRegexBuilderSymbolRepeated, IRegexBuilderSymbol, IRegexBuilderSymbolProperties
     {
         private readonly List<IGlyph> _glyphs = new List<IGlyph>();
 
@@ -42,7 +43,21 @@ namespace RegexAlternative
             return this;
         }
 
-        public IRegexBuilderSymbolProperties Symbol
+        public IRegexBuilderSymbolProperties String(string val)
+        {
+            AddGlyph(new SingleGlyph($"(?:{val})"));
+
+            return this;
+        }
+
+        public IRegexBuilderSymbolProperties Symbol(char val)
+        {
+            AddGlyph(new SingleGlyph(val.ToString()));
+
+            return this;
+        }
+
+        public IRegexBuilderSymbolProperties AnySymbol
         {
             get
             {
@@ -112,7 +127,7 @@ namespace RegexAlternative
             }
         }
 
-        public IRegexBuilderSymbolProperties WhichStartOfWord
+        public IRegexBuilderSymbolProperties StartOfWord
         {
             get
             {
@@ -122,7 +137,7 @@ namespace RegexAlternative
             }
         }
 
-        public IRegexBuilderSymbolProperties WhichEndOfWord
+        public IRegexBuilderSymbolProperties EndOfWord
         {
             get
             {
@@ -132,7 +147,7 @@ namespace RegexAlternative
             }
         }
 
-        public IRegexBuilderSymbolProperties WhichNotStartOfWord
+        public IRegexBuilderSymbolProperties NotStartOfWord
         {
             get
             {
@@ -142,7 +157,7 @@ namespace RegexAlternative
             }
         }
 
-        public IRegexBuilderSymbolProperties WhichNotEndOfWord
+        public IRegexBuilderSymbolProperties NotEndOfWord
         {
             get
             {
@@ -152,7 +167,7 @@ namespace RegexAlternative
             }
         }
 
-        public IRegexBuilderSymbolProperties WhichStartOfString
+        public IRegexBuilderSymbolProperties StartOfString
         {
             get
             {
@@ -162,7 +177,7 @@ namespace RegexAlternative
             }
         }
 
-        public IRegexBuilderSymbolProperties WhichEndOfString
+        public IRegexBuilderSymbolProperties EndOfString
         {
             get
             {
@@ -171,6 +186,8 @@ namespace RegexAlternative
                 return this;
             }
         }
+
+        public IRegexBuilderSymbolWhich Which => this;
 
         public IRegexBuilderSymbolRepeated Repeated => this;
 
@@ -195,18 +212,17 @@ namespace RegexAlternative
             return this;
         }
 
-        public IRegexBuilderSymbol Group
-        {
-            get
-            {
-                return new RegexBuilder(this);
-            }
-        }
+        public IRegexBuilderSymbol Group => new RegexBuilder(this);
 
         public IRegexBuilderSymbolProperties EndOfGroup
         {
             get
             {
+                if (_parentBuilder == null)
+                {
+                    throw new Exception("Group wasn't opened.");
+                }
+
                 _parentBuilder.AddGlyph(new GroupGlyph(_glyphs));
 
                 return _parentBuilder;
@@ -214,6 +230,16 @@ namespace RegexAlternative
         }
 
         public IRegexBuilderSymbol Then => this;
+
+        public IRegexBuilderSymbol Or
+        {
+            get
+            {
+                AddGlyph(new SingleGlyph("|"));
+
+                return this;
+            }
+        }
 
         public override string ToString()
         {

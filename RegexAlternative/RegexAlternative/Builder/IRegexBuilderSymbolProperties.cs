@@ -2,17 +2,7 @@
 {
     public interface IRegexBuilderSymbolProperties: IRegexBuilderThen
     {
-        IRegexBuilderSymbolProperties WhichStartOfWord { get; }
-
-        IRegexBuilderSymbolProperties WhichEndOfWord { get; }
-
-        IRegexBuilderSymbolProperties WhichNotStartOfWord { get; }
-
-        IRegexBuilderSymbolProperties WhichNotEndOfWord { get; }
-
-        IRegexBuilderSymbolProperties WhichStartOfString { get; }
-
-        IRegexBuilderSymbolProperties WhichEndOfString { get; }
+        IRegexBuilderSymbolWhich Which { get; }
 
         IRegexBuilderSymbolRepeated Repeated { get; }
     }

@@ -7,15 +7,15 @@ namespace RegexAlternativeTests
     public class Tests
     {
         [TestMethod]
-        public void Test1()
+        public void TestSymbols()
         {
             //Act
             var regexBuilder = RegexBuilder.Create();
 
             var result = regexBuilder
-                .Symbols("a-z").WhichStartOfString
+                .Symbols("a-z").Which.StartOfString
                 .Then.Number.Repeated.NTimes(3)
-                .Then.TextSymbol.WhichEndOfString.Repeated.FromNTimes(1)
+                .Then.TextSymbol.Which.EndOfString.Repeated.FromNTimes(1)
                 .ToString();
 
             //Assert
@@ -23,20 +23,41 @@ namespace RegexAlternativeTests
         }
 
         [TestMethod]
-        public void Test2()
+        public void TestGroup()
         {
             //Act
             var regexBuilder = RegexBuilder.Create();
 
             var result = regexBuilder
-                .Symbols("a-z")
-                .Then.Group.Symbols("qwe").Repeated.FromNTimes(3)
-                .Then.Number.Repeated.NTimes(1)
-                .Then.EndOfGroup.WhichEndOfString.Repeated.NTimes(2)
+                .Symbols("a-z").Which.StartOfString.Then
+                .Group
+                    .String("qwe").Repeated.FromNTimes(3).Then
+                    .Number.Then
+                .EndOfGroup.Which.EndOfString.Repeated.NTimes(2)
                 .ToString();
 
             //Assert
-            Assert.AreEqual(result, @"[a-z]([qwe]{3,}\d{1}){2}$");
+            Assert.AreEqual(result, @"^[a-z]((?:qwe){3,}\d){2}$");
+        }
+
+        [TestMethod]
+        public void TestOr()
+        {
+            //Act
+            var regexBuilder = RegexBuilder.Create();
+
+            var result = regexBuilder
+                .Group
+                    .Symbols("qwe").Then
+                .EndOfGroup.Repeated.NTimes(2).Or
+                .Group
+                    .Symbols("asd").Then
+                .EndOfGroup.Or
+                .AnySymbol
+                .ToString();
+
+            //Assert
+            Assert.AreEqual(result, @"([qwe]){2}|([asd])|.");
         }
     }
 }
