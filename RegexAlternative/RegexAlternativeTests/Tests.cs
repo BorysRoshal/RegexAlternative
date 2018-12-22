@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.Text.RegularExpressions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RegexAlternative;
 
 namespace RegexAlternativeTests
@@ -14,8 +15,8 @@ namespace RegexAlternativeTests
 
             var result = regexBuilder
                 .Symbols("a-z").Which.StartOfString
-                .Then.Number.Repeated.NTimes(3)
-                .Then.TextSymbol.Which.EndOfString.Repeated.FromNTimes(1)
+                .Then.Number.Repeated.ExactlyNTimes(3)
+                .Then.WordSymbol.Which.EndOfString.Repeated.AtLeastNTimes(1)
                 .ToString();
 
             //Assert
@@ -30,10 +31,10 @@ namespace RegexAlternativeTests
 
             var result = regexBuilder
                 .Symbols("a-z").Which.StartOfString.Then
-                .Group
-                    .String("qwe").Repeated.FromNTimes(3).Then
+                .BeginGroup
+                    .String("qwe").Repeated.AtLeastNTimes(3).Then
                     .Number.Then
-                .EndOfGroup.Which.EndOfString.Repeated.NTimes(2)
+                .EndGroup.Which.EndOfString.Repeated.ExactlyNTimes(2)
                 .ToString();
 
             //Assert
@@ -47,12 +48,14 @@ namespace RegexAlternativeTests
             var regexBuilder = RegexBuilder.Create();
 
             var result = regexBuilder
-                .Group
+                .BeginGroup
                     .Symbols("qwe").Then
-                .EndOfGroup.Repeated.NTimes(2).Or
-                .Group
+                .EndGroup.Repeated.ExactlyNTimes(2)
+                .Or
+                .BeginGroup
                     .Symbols("asd").Then
-                .EndOfGroup.Or
+                .EndGroup
+                .Or
                 .AnySymbol
                 .ToString();
 

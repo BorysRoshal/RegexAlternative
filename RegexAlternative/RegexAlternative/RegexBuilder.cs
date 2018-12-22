@@ -2,18 +2,20 @@
 using System.Collections.Generic;
 using System.Text;
 using RegexAlternative.Builder;
-using RegexAlternative.Repeated;
 using RegexAlternative.Glyphs;
+using RegexAlternative.Quantifiers;
 
 namespace RegexAlternative
 {
     public class RegexBuilder: IRegexBuilderSymbolWhich, IRegexBuilderSymbolRepeated, IRegexBuilderSymbol, IRegexBuilderSymbolProperties
     {
-        private readonly List<IGlyph> _glyphs = new List<IGlyph>();
+        private List<IGlyph> Glyphs { get; }  = new List<IGlyph>();
 
         private readonly RegexBuilder _parentBuilder;
 
         private IGlyph _currentGlyph;
+
+        private IGlyphFactory _glyphFactory;
 
         public static IRegexBuilderSymbol Create()
         {
@@ -22,37 +24,38 @@ namespace RegexAlternative
 
         protected RegexBuilder()
         {
+            _glyphFactory = new GlyphFactory();
         }
 
-        protected RegexBuilder(RegexBuilder parentBuilder)
+        protected RegexBuilder(RegexBuilder parentBuilder) : this()
         {
             _parentBuilder = parentBuilder;
         }
 
         public IRegexBuilderSymbolProperties Symbols(string val)
         {
-            AddGlyph(new SingleGlyph($"[{val}]"));
+            AddGlyph(_glyphFactory.CreateSymbolsGlyph(val));
 
             return this;
         }
 
         public IRegexBuilderSymbolProperties NotSymbols(string val)
         {
-            AddGlyph(new SingleGlyph($"[^{val}]"));
+            AddGlyph(_glyphFactory.CreateNotSymbolsGlyph(val));
 
             return this;
         }
 
         public IRegexBuilderSymbolProperties String(string val)
         {
-            AddGlyph(new SingleGlyph($"(?:{val})"));
+            AddGlyph(_glyphFactory.CreateStringGlyph(val));
 
             return this;
         }
 
         public IRegexBuilderSymbolProperties Symbol(char val)
         {
-            AddGlyph(new SingleGlyph(val.ToString()));
+            AddGlyph(_glyphFactory.CreateSymbolGlyph(val));
 
             return this;
         }
@@ -61,27 +64,27 @@ namespace RegexAlternative
         {
             get
             {
-                AddGlyph(new SingleGlyph("."));
+                AddGlyph(_glyphFactory.CreateAnySymbolGlyph());
 
                 return this;
             }
         }
 
-        public IRegexBuilderSymbolProperties TextSymbol
+        public IRegexBuilderSymbolProperties WordSymbol
         {
             get
             {
-                AddGlyph(new SingleGlyph(@"\w"));
+                AddGlyph(_glyphFactory.CreateWordSymbolGlyph());
 
                 return this;
             }
         }
 
-        public IRegexBuilderSymbolProperties NotTextSymbol
+        public IRegexBuilderSymbolProperties NotWordSymbol
         {
             get
             {
-                AddGlyph(new SingleGlyph(@"\W"));
+                AddGlyph(_glyphFactory.CreateNotWordSymbolGlyph());
 
                 return this;
             }
@@ -91,7 +94,7 @@ namespace RegexAlternative
         {
             get
             {
-                AddGlyph(new SingleGlyph(@"\s"));
+                AddGlyph(_glyphFactory.CreateSpaceGlyph());
 
                 return this;
             }
@@ -101,7 +104,7 @@ namespace RegexAlternative
         {
             get
             {
-                AddGlyph(new SingleGlyph(@"\S"));
+                AddGlyph(_glyphFactory.CreateNotSpaceGlyph());
 
                 return this;
             }
@@ -111,7 +114,7 @@ namespace RegexAlternative
         {
             get
             {
-                AddGlyph(new SingleGlyph(@"\d"));
+                AddGlyph(_glyphFactory.CreateNumberGlyph());
 
                 return this;
             }
@@ -121,17 +124,31 @@ namespace RegexAlternative
         {
             get
             {
-                AddGlyph(new SingleGlyph(@"\D"));
+                AddGlyph(_glyphFactory.CreateNotNumberGlyph());
 
                 return this;
             }
+        }
+
+        public IRegexBuilderSymbolProperties SymbolInUnicodeCategory(string name)
+        {
+            AddGlyph(_glyphFactory.CreateSymbolInUnicodeCategoryGlyph(name));
+
+            return this;
+        }
+
+        public IRegexBuilderSymbolProperties SymbolNotInUnicodeCategory(string name)
+        {
+            AddGlyph(_glyphFactory.CreateSymbolNotInUnicodeCategoryGlyph(name));
+
+            return this;
         }
 
         public IRegexBuilderSymbolProperties StartOfWord
         {
             get
             {
-                _currentGlyph.IsStartOfWord = true;
+                _currentGlyph.Anchors |= Anchors.StartOfWord;
 
                 return this;
             }
@@ -141,7 +158,7 @@ namespace RegexAlternative
         {
             get
             {
-                _currentGlyph.IsEndOfWord = true;
+                _currentGlyph.Anchors |= Anchors.EndOfWord;
 
                 return this;
             }
@@ -151,7 +168,7 @@ namespace RegexAlternative
         {
             get
             {
-                _currentGlyph.IsNotStartOfWord = true;
+                _currentGlyph.Anchors |= Anchors.NotStartOfWord;
 
                 return this;
             }
@@ -161,7 +178,7 @@ namespace RegexAlternative
         {
             get
             {
-                _currentGlyph.IsNotEndOfWord = true;
+                _currentGlyph.Anchors |= Anchors.NotEndOfWord;
 
                 return this;
             }
@@ -171,7 +188,7 @@ namespace RegexAlternative
         {
             get
             {
-                _currentGlyph.IsStartOfString = true;
+                _currentGlyph.Anchors |= Anchors.StartOfString;
 
                 return this;
             }
@@ -181,7 +198,7 @@ namespace RegexAlternative
         {
             get
             {
-                _currentGlyph.IsEndOfString = true;
+                _currentGlyph.Anchors |= Anchors.EndOfString;
 
                 return this;
             }
@@ -193,28 +210,28 @@ namespace RegexAlternative
 
         public IRegexBuilderThen FromNtoMTimes(int n, int m)
         {
-            _currentGlyph.Repeated = new RepeatedFromNtoMTimes(n, m);
+            _currentGlyph.Quantifier = new QuantifierNtoMTimes(n, m);
 
             return this;
         }
 
-        public IRegexBuilderThen FromNTimes(int n)
+        public IRegexBuilderThen AtLeastNTimes(int n)
         {
-            _currentGlyph.Repeated = new RepeatedFromNTimes(n);
+            _currentGlyph.Quantifier = new QuantifierFromNTimes(n);
 
             return this;
         }
 
-        public IRegexBuilderThen NTimes(int n)
+        public IRegexBuilderThen ExactlyNTimes(int n)
         {
-            _currentGlyph.Repeated = new RepeatedNTimes(n);
+            _currentGlyph.Quantifier = new QuantifierNTimes(n);
 
             return this;
         }
 
-        public IRegexBuilderSymbol Group => new RegexBuilder(this);
+        public IRegexBuilderSymbol BeginGroup => new RegexBuilder(this);
 
-        public IRegexBuilderSymbolProperties EndOfGroup
+        public IRegexBuilderSymbolProperties EndGroup
         {
             get
             {
@@ -223,10 +240,17 @@ namespace RegexAlternative
                     throw new Exception("Group wasn't opened.");
                 }
 
-                _parentBuilder.AddGlyph(new GroupGlyph(_glyphs));
+                _parentBuilder.AddGlyph(new GroupGlyph(Glyphs));
 
                 return _parentBuilder;
             }
+        }
+
+        public IRegexBuilderSymbol Group(IRegexBuilderThen builder)
+        {
+            AddGlyph(new GroupGlyph(((RegexBuilder)builder).Glyphs));
+
+            return this;
         }
 
         public IRegexBuilderSymbol Then => this;
@@ -235,24 +259,26 @@ namespace RegexAlternative
         {
             get
             {
-                AddGlyph(new SingleGlyph("|"));
+                AddGlyph(_glyphFactory.CreateOrGlyph());
 
                 return this;
             }
         }
 
+        public IRegexBuilderThen End => this;
+
         public override string ToString()
         {
             var builder = new StringBuilder();
 
-            _glyphs.ForEach(x => builder.Append(x.Compile()));
+            Glyphs.ForEach(x => builder.Append(x.Compile()));
 
             return builder.ToString();
         }
 
         private void AddGlyph(IGlyph glyph)
         {
-            _glyphs.Add(glyph);
+            Glyphs.Add(glyph);
             _currentGlyph = glyph;
         }
     }

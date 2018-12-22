@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("RegexBuilder")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Regex Alternative")]
+[assembly: AssemblyDescription("Library that simplify creation of regular expressions")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("RegexBuilder")]
-[assembly: AssemblyCopyright("Copyright ©  2018")]
+[assembly: AssemblyCompany("Borys Roshal")]
+[assembly: AssemblyProduct("RegexAlternative")]
+[assembly: AssemblyCopyright("Copyright @  2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

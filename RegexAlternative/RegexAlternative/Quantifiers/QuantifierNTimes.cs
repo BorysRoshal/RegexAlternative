@@ -1,10 +1,10 @@
-﻿namespace RegexAlternative.Repeated
+﻿namespace RegexAlternative.Quantifiers
 {
-    internal class RepeatedNTimes : AbstractRepeated
+    internal class QuantifierNTimes : AbstractQuantifier
     {
         public int N { get; set; }
 
-        public RepeatedNTimes(int n)
+        public QuantifierNTimes(int n)
         {
             N = n;
         }

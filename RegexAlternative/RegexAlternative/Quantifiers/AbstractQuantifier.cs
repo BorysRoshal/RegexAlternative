@@ -1,6 +1,6 @@
-﻿namespace RegexAlternative.Repeated
+﻿namespace RegexAlternative.Quantifiers
 {
-    internal abstract class AbstractRepeated : IRepeated
+    internal abstract class AbstractQuantifier : IQuantifier
     {
         public abstract bool Validate();
 

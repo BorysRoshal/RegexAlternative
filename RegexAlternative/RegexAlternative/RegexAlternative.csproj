@@ -12,6 +12,7 @@
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -21,6 +22,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -29,6 +31,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -46,12 +49,15 @@
     <Compile Include="Builder\IRegexBuilderSymbol.cs" />
     <Compile Include="Builder\IRegexBuilderSymbolRepeated.cs" />
     <Compile Include="Builder\IRegexBuilderSymbolWhich.cs" />
+    <Compile Include="Glyphs\Anchors.cs" />
+    <Compile Include="Glyphs\GlyphFactory.cs" />
+    <Compile Include="Glyphs\IGlyphFactory.cs" />
     <Compile Include="RegexBuilder.cs" />
-    <Compile Include="Repeated\RepeatedNTimes.cs" />
-    <Compile Include="Repeated\RepeatedFromNTimes.cs" />
-    <Compile Include="Repeated\AbstractRepeated.cs" />
-    <Compile Include="Repeated\IRepeated.cs" />
-    <Compile Include="Repeated\RepeatedFromNtoMTimes.cs" />
+    <Compile Include="Quantifiers\QuantifierNTimes.cs" />
+    <Compile Include="Quantifiers\QuantifierFromNTimes.cs" />
+    <Compile Include="Quantifiers\AbstractQuantifier.cs" />
+    <Compile Include="Quantifiers\IQuantifier.cs" />
+    <Compile Include="Quantifiers\QuantifierNtoMTimes.cs" />
     <Compile Include="Glyphs\AbstractGlyph.cs" />
     <Compile Include="Glyphs\GroupGlyph.cs" />
     <Compile Include="ICompilable.cs" />
